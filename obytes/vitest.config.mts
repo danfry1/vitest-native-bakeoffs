@@ -4,7 +4,7 @@ import { reactNative } from 'vitest-native'
 import { jestCompatAliases, jestCompatSetup, jestMockTransform } from 'vitest-native/jest-compat'
 
 export default defineConfig({
-  plugins: [reactNative({ engine: 'native', transform: ['uniwind', '@gorhom/bottom-sheet'] }), jestMockTransform()],
+  plugins: [reactNative({ engine: 'native', transform: ['@gorhom/bottom-sheet'] }), jestMockTransform()],
   resolve: {
     dedupe: ['react', 'react-test-renderer', 'react-is'],
     alias: {

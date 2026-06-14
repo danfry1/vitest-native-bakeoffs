@@ -12,7 +12,7 @@ The [obytes React Native template](https://github.com/obytes/react-native-templa
 | react | 19.1.0 |
 | @testing-library/react-native | 13.3.3 (already in vitest-native's supported range — no bump) |
 | vitest | 4.1.8 |
-| vitest-native | 0.5.0 |
+| vitest-native | 0.6.1 |
 
 ## Result
 
@@ -26,9 +26,11 @@ The [obytes React Native template](https://github.com/obytes/react-native-templa
 ## What it took (and what it surfaced)
 
 - **Drop obytes' inline reanimated + mmkv mocks** — vitest-native's auto-detected presets are more complete (obytes' inline reanimated mock is missing exports like `ReduceMotion`).
-- **`transform: ['uniwind', '@gorhom/bottom-sheet']`** — `uniwind` (the app-wide styling lib) does `import { Appearance } from 'react-native'`. React Native defines `Appearance` via a lazy getter on its index, which Node's CJS→ESM named-export detection can't see when the lib is *externalized*. Pulling the lib into the Vite graph via the `transform` allowlist resolves the named import. **This is genuine vitest-native friction with externalized ESM libs importing getter-based RN exports.**
+- **`transform: ['@gorhom/bottom-sheet']`** — needed so the bottom-sheet mock (below) intercepts (`vi.mock` doesn't apply to externalized libs unless they're pulled into the Vite graph).
 - **Mock no-preset native libs** — `@gorhom/bottom-sheet`, `@shopify/flash-list`, `react-native-keyboard-controller` (no built-in presets; the same libs jest-expo / `transformIgnorePatterns` handle on the Jest side).
 - **Global shims** — `location` and `ErrorUtils`, which RN/Expo's init expect.
+
+> **Fixed in vitest-native 0.6.1:** `uniwind` (the app-wide styling lib) does `import { Appearance } from 'react-native'`, where `Appearance` is a lazy getter on RN's index that Node's CJS→ESM named-export detection misses for externalized libs. This previously required adding `uniwind` to the `transform` allowlist; as of 0.6.1 the native engine serves RN's index with an export hint, so getter-based named imports resolve and the workaround is no longer needed.
 
 ## The 6 that don't pass
 
