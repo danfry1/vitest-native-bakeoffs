@@ -18,22 +18,22 @@ Run with `./setup.sh` (clones paper at the pinned commit, applies the vitest-nat
 | Runner | Tests | Files |
 |---|---|---|
 | Jest (paper's own, baseline) | **733 / 734** passed (1 skipped) | 56 suites |
-| **vitest-native `engine: 'native'`** | **602 / 678** passed (1 skipped) | 29 / 52 |
+| **vitest-native `engine: 'native'`** | **625 / 734** passed (~85%) | 36 / 52 |
 
-**602 of paper's own tests (~89%) pass under vitest-native's native engine** with an idiomatic config (jest-compat + auto-detected presets), after re-recording snapshots. No paper source was modified beyond the RNTL bump and swapping the test config.
+**625 of paper's 734 tests (~85%) pass under vitest-native's native engine** with an idiomatic config (jest-compat + auto-detected presets), after re-recording snapshots. No paper *source* was modified — only the RNTL bump and the test config/setup.
 
-> Note: the test totals differ (678 vs 734) because some files fail at collection (see below), so their tests aren't counted.
+> The native engine externalizes React Native, so paper's deep `jest.mock('react-native…')` calls can't intercept. Where the mocked behavior is reasonable, the setup reproduces it by monkeypatching the **live** (resident) RN modules at runtime — paper's `Animated.timing/loop/parallel` override and its fixed 750-wide window. That recovers ~23 tests over a no-monkeypatch baseline (602 → 625).
 
-## The ~75 failures are Jest-mock coupling, not vitest-native bugs
+## The remaining ~52 failures are Jest-mock coupling, not vitest-native bugs
 
-paper's test suite couples to **Jest's React Native mock implementation details**, which the native engine intentionally doesn't replicate (it runs *real* RN and mocks only the native boundary):
+These tests assert on **Jest's React Native mock implementation details**, which a real-RN engine deliberately doesn't replicate (replicating them would defeat the point of running real RN):
 
 - **`vi.spyOn(View.prototype, 'measure')`** (Tooltip, all 17) — Jest's mock `View` is a class with `measure` on its prototype; real RN's `View` is a `forwardRef` with no such prototype, so the spy target is undefined.
-- **`jest.mock('react-native', () => { …RN.Animated.timing = … })`** — paper overrides `Animated.timing/loop/parallel` for synchronous animations. Under the native engine RN is externalized, so `jest.mock('react-native')` doesn't intercept; real RN Animated runs instead.
-- **`jest.mock('react-native/Libraries/Utilities/useWindowDimensions')` and `.../BackHandler`** — deep RN-internal paths; same externalization reason, so the mocked dimensions (750w) / BackHandler don't apply.
-- **Dimensions-listener internals** (PaperProvider) — assert on jest-mock-specific listener behavior.
+- **`jest.mock('react-native/Libraries/Utilities/Appearance')` + `jest.spyOn(Appearance, 'addChangeListener')`** (PaperProvider, 10) — deep RN-internal mocks/spies that don't intercept under externalized RN.
+- **Dimensions-listener spies** ("removes Dimensions listener on unmount") — assert on jest-mock-specific listener identities.
+- A scattered tail (TextInput, CheckboxItem, Dialog, Modal, Menu, …, 1–5 each) — same family: spies/mocks targeting RN internals.
 
-These are the documented trade-off of running real RN: tests written against jest's mock internals need adjusting. Tests asserting on *rendered output and behavior* pass.
+Tests asserting on *rendered output and behavior* pass; tests asserting on *jest's mock internals* are the gap.
 
 ## How to reproduce
 

@@ -8,7 +8,7 @@ Each subdirectory pins an app at a known commit, applies a vitest-native config,
 
 | App | Jest baseline | vitest-native (`engine: 'native'`) | Notes |
 |---|---|---|---|
-| [react-native-paper](paper/RESULTS.md) | 733 / 734 | **602 / 678 (~89%)** | Remaining failures are tests coupled to Jest's RN-mock internals (`View.prototype.measure` spies, `jest.mock('react-native')` Animated override, deep RN-internal mocks) — not vitest-native bugs. |
+| [react-native-paper](paper/RESULTS.md) | 733 / 734 | **625 / 734 (~85%)** | Remaining failures are tests coupled to Jest's RN-mock internals (`View.prototype.measure` spies, deep `jest.mock('react-native/…')` of Appearance/Dimensions) — not vitest-native bugs. |
 
 ## What this is (and isn't)
 
