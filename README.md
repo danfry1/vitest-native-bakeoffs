@@ -8,7 +8,8 @@ Each subdirectory pins an app at a known commit, applies a vitest-native config,
 
 | App | Jest baseline | vitest-native (`engine: 'native'`) | Notes |
 |---|---|---|---|
-| [react-native-paper](paper/RESULTS.md) | 733 / 734 | **625 / 734 (~85%)** | Remaining failures are tests coupled to Jest's RN-mock internals (`View.prototype.measure` spies, deep `jest.mock('react-native/…')` of Appearance/Dimensions) — not vitest-native bugs. |
+| [react-native-paper](paper/RESULTS.md) | 733 / 734 | **625 / 734 (~85%)** | A library. Remaining failures are tests coupled to Jest's RN-mock internals (`View.prototype.measure` spies, deep `jest.mock('react-native/…')` of Appearance/Dimensions) — not vitest-native bugs. |
+| [obytes template](obytes/RESULTS.md) | 40 / 40 | **34 / 40 (~85%)** | An Expo app — the deeply-coupled case. Needed presets + a `transform` allowlist + mocks for no-preset libs; surfaced real friction (externalized `uniwind` importing a getter-based RN export; Expo-core init globals). |
 
 ## What this is (and isn't)
 
