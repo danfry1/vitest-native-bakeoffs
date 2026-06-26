@@ -2,3 +2,5 @@ node_modules/
 react-native-paper/
 .DS_Store
 obytes-app/
+.paper/
+.paper-rntl14/
