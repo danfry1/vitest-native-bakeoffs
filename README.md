@@ -8,8 +8,11 @@ Each subdirectory pins an app at a known commit, applies a vitest-native config,
 
 | App | Jest baseline | vitest-native (`engine: 'native'`) | Notes |
 |---|---|---|---|
-| [react-native-paper](paper/RESULTS.md) | 733 / 734 | **625 / 734 (~85%)** | A library. Remaining failures are tests coupled to Jest's RN-mock internals (`View.prototype.measure` spies, deep `jest.mock('react-native/…')` of Appearance/Dimensions) — not vitest-native bugs. |
-| [obytes template](obytes/RESULTS.md) | 40 / 40 | **34 / 40 (~85%)** | An Expo app — the deeply-coupled case. Needed presets + mocks for no-preset libs; remaining gaps are Expo-core init globals + a bottom-sheet modal test. (Surfaced the getter-based RN export issue with externalized `uniwind`, fixed in vitest-native 0.6.1.) |
+| [react-native-paper](paper/RESULTS.md) | 716 / 717 | **696 / 717** | A library, at `c719a08` (React Native 0.88.1, RNTL 14). The remaining failures are listed in its results. |
+| [obytes template](obytes/RESULTS.md) | 40 / 40 | **40 / 40** | An Expo SDK 57 app, at `43783db` (React Native 0.86.3). |
+
+Both apps are pinned to commits on vitest-native 0.15's supported floors (React Native 0.86+, Expo 57+, RNTL 13+,
+Vitest 5, Vite 8). Each config is the `vitest-native migrate` output for its commit, frozen in the repository.
 
 ## What this is (and isn't)
 
